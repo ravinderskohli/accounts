@@ -2,56 +2,69 @@ package com.sapient.accounts.service.impl;
 
 import com.sapient.accounts.constants.AccountsConstants;
 import com.sapient.accounts.dto.AccountsDto;
-import com.sapient.accounts.dto.CustomerDto;
+import com.sapient.accounts.dto.AccountsMsgDto;
+import com.sapient.accounts.dto.CustomerDetailsDto;
 import com.sapient.accounts.entity.Accounts;
-import com.sapient.accounts.entity.Customer;
-import com.sapient.accounts.exception.CustomerAlreadyExistsException;
+import com.sapient.accounts.exception.CustomerNotExistsException;
 import com.sapient.accounts.exception.ResourceNotFoundException;
 import com.sapient.accounts.mapper.AccountsMapper;
-import com.sapient.accounts.mapper.CustomerMapper;
 import com.sapient.accounts.repository.AccountsRepository;
-import com.sapient.accounts.repository.CustomerRepository;
 import com.sapient.accounts.service.IAccountsService;
+import com.sapient.accounts.service.ICustomerService;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.Random;
 
 @Service
 @AllArgsConstructor
 public class AccountsServiceImpl implements IAccountsService {
+    private static final Logger logger = LoggerFactory.getLogger(AccountsServiceImpl.class);
+
     private AccountsRepository accountsRepository;
-    private CustomerRepository customerRepository;
+    private ICustomerService customerService;
+    private final StreamBridge streamBridge;
+
 
     /**
      *
-     * @param customerDto - CustomerDto
+     * @param accountsDto - accountsDTO
      */
-    public void createAccount(CustomerDto customerDto) {
-        Customer customer = CustomerMapper.mapToCustomer(customerDto, new Customer());
-        Optional<Customer> optionalCustomer = customerRepository.findByMobileNumber(customer.getMobileNumber());
-        if(optionalCustomer.isPresent()) {
-            throw new CustomerAlreadyExistsException("Customer Already Exist"+customer.getMobileNumber());
+    public void createAccount(AccountsDto accountsDto) {
+        CustomerDetailsDto customerDetailsDto = customerService.fetchCustomerDetails(accountsDto.getCustomerId());
+
+        if(Objects.isNull(customerDetailsDto)) {
+            throw new CustomerNotExistsException("Customer Not Exist"+ accountsDto.getCustomerId() );
         }
-        Customer savedCustomer = customerRepository.save(customer);
-        Accounts accounts = createNewAccount(savedCustomer);
-        accountsRepository.save(accounts);
+        Accounts accounts = createNewAccount(accountsDto);
+        Accounts savedAccount = accountsRepository.save(accounts);
+        if(!Objects.nonNull(savedAccount))
+        sendCommunication(accountsDto, customerDetailsDto);
+
 
     }
 
-    private Accounts createNewAccount(Customer customer) {
+    private Accounts createNewAccount(AccountsDto accountsDto) {
         Accounts newAccount = new Accounts();
-        newAccount.setCustomerId(customer.getCustomerId());
+        newAccount.setCustomerId(accountsDto.getCustomerId());
         long randomAccNumber = 1000000000L + new Random().nextInt(900000000);
-
         newAccount.setAccountNumber(randomAccNumber);
         newAccount.setAccountType(AccountsConstants.SAVINGS);
         newAccount.setBranchAddress(AccountsConstants.ADDRESS);
         return newAccount;
     }
-
+    @Override
+    public AccountsDto fetchAccount(Long accountNumber) {
+        Accounts accounts = accountsRepository.findByAccountNumber(accountNumber).orElseThrow( () ->
+                new ResourceNotFoundException("Accounts","accountNumber", accountNumber.toString()));
+        AccountsDto accountsDto = AccountsMapper.mapToAccountsDto(accounts, new AccountsDto());
+        return  accountsDto;
+    }
+/*
     @Override
     public CustomerDto fetchAccount(String mobileNumber) {
         Customer customer = customerRepository.findByMobileNumber(mobileNumber).orElseThrow( () -> new ResourceNotFoundException("Customer","mobileNumber", mobileNumber));
@@ -63,7 +76,7 @@ public class AccountsServiceImpl implements IAccountsService {
     }
 
     @Override
-    public boolean updateAccount(CustomerDto customerDto) {
+    public boolean updateAccount(AccountsDto accountsDto) {
         boolean isUpdated = false;
         AccountsDto accountsDto = customerDto.getAccountsDto();
         if(accountsDto !=null ){
@@ -82,8 +95,8 @@ public class AccountsServiceImpl implements IAccountsService {
             isUpdated = true;
         }
         return  isUpdated;
-    }
-    @Override
+    }*/
+  /*  @Override
     public boolean deleteAccount(String mobileNumber) {
         Customer customer = customerRepository.findByMobileNumber(mobileNumber).orElseThrow(
                 () -> new ResourceNotFoundException("Customer", "mobileNumber", mobileNumber)
@@ -91,6 +104,17 @@ public class AccountsServiceImpl implements IAccountsService {
         accountsRepository.deleteByCustomerId(customer.getCustomerId());
         customerRepository.deleteById(customer.getCustomerId());
         return true;
+    }*/
+
+    private void sendCommunication(AccountsDto accountsDto, CustomerDetailsDto customerDetailsDto) {
+        var accountMsgDto = new AccountsMsgDto(accountsDto.getAccountNumber().get()
+
+                ,
+                customerDetailsDto.getName(), customerDetailsDto.getEmail(), customerDetailsDto.getMobileNumber());
+        logger.info("Sending communication request details {}", accountMsgDto);
+        var result = streamBridge.send("sendCommunication-out-0", accountMsgDto);
+        logger.info("Is the communication request successfully send to customer {}", result);
+
     }
 
 }

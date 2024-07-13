@@ -1,19 +1,24 @@
 package com.sapient.accounts.service;
 
-import com.sapient.accounts.dto.CustomerDto;
+import com.sapient.accounts.dto.AccountsDto;
+import com.sapient.accounts.dto.CustomerDetailsDto;
 
 public interface IAccountsService {
 
     /**
      *
-     * @param customerDto - CustomerDto
+     * @param accountsDto - AccountsDto
      */
-    void createAccount(CustomerDto customerDto);
+    void createAccount(AccountsDto accountsDto);
+    AccountsDto fetchAccount(Long accountNumber);
 
-    CustomerDto fetchAccount(String mobileNumber);
 
-    boolean updateAccount(CustomerDto customerDto);
+/*
+    CustomerDetailsDto fetchAccount(String mobileNumber);
+
+    boolean updateAccount(AccountsDto customerDto);
 
     boolean deleteAccount(String mobileNumber);
+*/
 
 }

@@ -14,14 +14,39 @@ spring:
         show-sql: true
   config:
     import: "optional:configserver:http://localhost:8071/"
+
+  application:
+      name: "accounts"
+
+management:
+  info:
+    env:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  metrics:
+    logs:
+      application: ${spring.application.name}
   cloud:
     openfeign:
       circuitbreaker:
-        enabled: true
-  application:
-    name: accounts
+        enabled: false
+    #stream:
+        # bindings:
+          #sendCommunication-out-0:
+        #destination: send-communication
+        #kafka:
+        #binder:
+          #brokers:
+        #-localhost:9092
+
   profiles:
     active: "prod"
+  graphql:
+    graphql:
+      enabled: true
 server:
  port: 8080
 

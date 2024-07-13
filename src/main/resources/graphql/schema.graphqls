@@ -1,0 +1,9 @@
+type Query {
+    accountById(id: ID): AccountsDto
+}
+
+type AccountsDto {
+    accountNumber: ID
+    accountType: String
+    branchAddress: String
+}
