@@ -33,14 +33,14 @@ management:
     openfeign:
       circuitbreaker:
         enabled: false
-    #stream:
-        # bindings:
-          #sendCommunication-out-0:
-        #destination: send-communication
-        #kafka:
-        #binder:
-          #brokers:
-        #-localhost:9092
+    stream:
+        bindings:
+          sendCommunication-out-0:
+            destination: send-communication
+        kafka:
+          binder:
+            brokers:
+              -localhost:9092
 
   profiles:
     active: "prod"
