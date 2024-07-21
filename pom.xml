@@ -129,7 +129,7 @@
 				<version>3.4.1</version>
 				<configuration>
 					<to>
-						<image>docker.io/ravinderskohli/${project.artifactId}:s4</image>
+						<image>docker.io/ravinderskohli/${project.artifactId}:s5</image>
 					</to>
 				</configuration>
 			</plugin>

@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class CustomerServiceImpl implements ICustomerService {
 
-    @Autowired
     private UsersFeignClient usersFeignClient;
 
 
