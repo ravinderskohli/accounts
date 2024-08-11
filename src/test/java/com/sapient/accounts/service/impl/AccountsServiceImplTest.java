@@ -82,11 +82,19 @@ class AccountsServiceImplTest {
     void fetchAccount_AccountFound() {
         Accounts accounts = new Accounts();
         accounts.setAccountNumber(1L);
+        accounts.setBranchAddress("addr1");
+        accounts.setCreatedBy("siravin");
+        accounts.getUpdatedAt();
+        accounts.getCreatedAt();
+        accounts.getCreatedBy();
         when(accountsRepository.findByAccountNumber(anyLong())).thenReturn(Optional.of(accounts));
 
         AccountsDto result = accountsService.fetchAccount(1L);
+        AccountsDto result1 = accountsService.accountById(1L);
 
         assertNotNull(result);
+        assertNotNull(result1);
+
         assertEquals(1L, result.getAccountNumber().get());
     }
 }

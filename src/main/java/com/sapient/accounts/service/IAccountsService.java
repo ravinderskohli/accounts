@@ -2,6 +2,7 @@ package com.sapient.accounts.service;
 
 import com.sapient.accounts.dto.AccountsDto;
 import com.sapient.accounts.dto.CustomerDetailsDto;
+import org.springframework.graphql.data.method.annotation.Argument;
 
 public interface IAccountsService {
 
@@ -11,14 +12,6 @@ public interface IAccountsService {
      */
     void createAccount(AccountsDto accountsDto);
     AccountsDto fetchAccount(Long accountNumber);
-
-
-/*
-    CustomerDetailsDto fetchAccount(String mobileNumber);
-
-    boolean updateAccount(AccountsDto customerDto);
-
-    boolean deleteAccount(String mobileNumber);
-*/
+    AccountsDto accountById(@Argument Long id);
 
 }

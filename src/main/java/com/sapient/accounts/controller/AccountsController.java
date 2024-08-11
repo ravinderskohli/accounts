@@ -53,47 +53,4 @@ public class AccountsController {
         return iAccountsService.fetchAccount(id);
     }
 
-/*
-    @GetMapping("/fetch")
-    public ResponseEntity<CustomerDetailsDto> fetchAccountDetails(@RequestParam String mobileNumber) {
-        CustomerDetailsDto customerDto = iAccountsService.fetchAccount(mobileNumber);
-        return ResponseEntity.status(HttpStatus.OK).body(customerDto);
-    }
-    @PutMapping("/update")
-    public ResponseEntity<ResponseDto> updateAccountDetails(@Valid @RequestBody AccountsDto accountsDto) {
-        boolean isUpdated = iAccountsService.updateAccount(accountsDto);
-        if(isUpdated) {
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(new ResponseDto(AccountsConstants.STATUS_200, AccountsConstants.MESSAGE_200));
-        }else{
-            return ResponseEntity
-                    .status(HttpStatus.EXPECTATION_FAILED)
-                    .body(new ResponseDto(AccountsConstants.STATUS_417, AccountsConstants.MESSAGE_417_UPDATE));
-        }
-    }
-    @Operation(summary = "create Account REST API",description = "create Account REST API desc")
-    @ApiResponses({@ApiResponse(responseCode = "201",description = "Http Status Created"),@ApiResponse(responseCode = "500",
-            description = "Http Status Internal Server Error", content = @Content(schema = @Schema(implementation = ErrorResponseDto.class)))})
-    @DeleteMapping("/delete")
-    public ResponseEntity<ResponseDto> deleteAccountDetails(@RequestParam
-                                                            @Pattern(regexp="(^$|[0-9]{10})",message = "Mobile number must be 10 digits")
-                                                            String mobileNumber) {
-        boolean isDeleted = iAccountsService.deleteAccount(mobileNumber);
-        if(isDeleted) {
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(new ResponseDto(AccountsConstants.STATUS_200, AccountsConstants.MESSAGE_200));
-        }else{
-            return ResponseEntity
-                    .status(HttpStatus.EXPECTATION_FAILED)
-                    .body(new ResponseDto(AccountsConstants.STATUS_417, AccountsConstants.MESSAGE_417_DELETE));
-        }
-    }*/
-    @GetMapping("/contact-info")
-    public ResponseEntity<AccountsContactInfoDto> getContactInfo() {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(accountsContactInfoDto);
-    }
 }
