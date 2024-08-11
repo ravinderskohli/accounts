@@ -106,7 +106,7 @@ public class AccountsServiceImpl implements IAccountsService {
         return true;
     }*/
 
-    private void sendCommunication(AccountsDto accountsDto, CustomerDetailsDto customerDetailsDto) {
+    public void sendCommunication(AccountsDto accountsDto, CustomerDetailsDto customerDetailsDto) {
         var accountMsgDto = new AccountsMsgDto(accountsDto.getAccountNumber().get()
 
                 ,

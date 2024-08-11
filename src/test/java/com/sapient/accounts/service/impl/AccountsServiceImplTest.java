@@ -1,6 +1,7 @@
 package com.sapient.accounts.service.impl;
 
 import com.sapient.accounts.dto.AccountsDto;
+import com.sapient.accounts.dto.CustomerDetailsDto;
 import com.sapient.accounts.entity.Accounts;
 import com.sapient.accounts.exception.CustomerNotExistsException;
 import com.sapient.accounts.exception.ResourceNotFoundException;
@@ -25,6 +26,9 @@ class AccountsServiceImplTest {
 
     @Mock
     private AccountsRepository accountsRepository;
+    private AccountsDto accountsDto;
+    private CustomerDetailsDto customerDetailsDto;
+
 
     @Mock
     private ICustomerService customerService;
@@ -45,6 +49,26 @@ class AccountsServiceImplTest {
         when(customerService.fetchCustomerDetails(anyLong())).thenReturn(null);
 
         assertThrows(CustomerNotExistsException.class, () -> accountsService.createAccount(accountsDto));
+    }
+    @Test
+    void testCreateAccount_CustomerExists_AccountSaveFails() {
+        // Setup
+        CustomerDetailsDto customerDetailsDto = new CustomerDetailsDto();
+        customerDetailsDto.setName("customer1");
+
+        // Mocking
+        when(customerService.fetchCustomerDetails(1L)).thenReturn(customerDetailsDto);
+        when(accountsRepository.save(any(Accounts.class))).thenReturn(null);
+
+        // DTO setup
+        AccountsDto accountsDto = new AccountsDto();
+        accountsDto.setCustomerId(1L);
+        accountsDto.setAccountNumber(Optional.of(12333333333l));
+
+        // Execution and Verification
+        assertDoesNotThrow(() -> accountsService.createAccount(accountsDto));
+        verify(customerService).fetchCustomerDetails(1L); // Corrected to match the mocked input
+        verify(accountsRepository).save(any(Accounts.class));
     }
 
     @Test
