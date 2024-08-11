@@ -26,9 +26,6 @@ class AccountsServiceImplTest {
 
     @Mock
     private AccountsRepository accountsRepository;
-    private AccountsDto accountsDto;
-    private CustomerDetailsDto customerDetailsDto;
-
 
     @Mock
     private ICustomerService customerService;
