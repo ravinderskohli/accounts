@@ -18,6 +18,7 @@ import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -34,7 +35,7 @@ public class AccountsServiceImpl implements IAccountsService {
      *
      * @param accountsDto - accountsDTO
      */
-    public void createAccount(AccountsDto accountsDto) {
+    public AccountsDto createAccount(AccountsDto accountsDto) {
         CustomerDetailsDto customerDetailsDto = customerService.fetchCustomerDetails(accountsDto.getCustomerId());
 
         if(Objects.isNull(customerDetailsDto)) {
@@ -42,9 +43,11 @@ public class AccountsServiceImpl implements IAccountsService {
         }
         Accounts accounts = createNewAccount(accountsDto);
         Accounts savedAccount = accountsRepository.save(accounts);
-        if(!Objects.nonNull(savedAccount))
-        sendCommunication(accountsDto, customerDetailsDto);
-
+       if(!Objects.nonNull(savedAccount)) {
+           sendCommunication(accountsDto, customerDetailsDto);
+       }
+        accountsDto.setAccountNumber(Optional.of(savedAccount.getAccountNumber()));
+       return accountsDto;
 
     }
 

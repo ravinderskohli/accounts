@@ -9,4 +9,6 @@ public class ResponseDto {
     private String statusCode;
 
     private String statusMsg;
+
+    private AccountsDto accountsDto;
 }

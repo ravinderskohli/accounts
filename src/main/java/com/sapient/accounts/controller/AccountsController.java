@@ -31,16 +31,12 @@ public class AccountsController {
     public AccountsController(IAccountsService iAccountsService) {
         this.iAccountsService = iAccountsService;
     }
-
-
-
-
    @Operation(summary = "create Account REST API",description = "create Account REST API desc")
    @ApiResponse(responseCode = "201",description = "Http Status Created")
-    @PostMapping("/create")
+   @PostMapping("/create")
     public ResponseEntity<ResponseDto> createAccount(@Valid  @RequestBody AccountsDto accountsDto) {
-        iAccountsService.createAccount(accountsDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseDto(AccountsConstants.STATUS_201, AccountsConstants.MESSAGE_201));
+       AccountsDto finalAccountsDto = iAccountsService.createAccount(accountsDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseDto(AccountsConstants.STATUS_201, AccountsConstants.MESSAGE_201, finalAccountsDto));
     }
 
     @GetMapping("/fetch")
@@ -51,6 +47,12 @@ public class AccountsController {
     @QueryMapping
     public AccountsDto accountById(@Argument Long id) {
         return iAccountsService.fetchAccount(id);
+    }
+    @GetMapping("/contact-info")
+    public ResponseEntity<AccountsContactInfoDto> getContactInfo() {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(accountsContactInfoDto);
     }
 
 }

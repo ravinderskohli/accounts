@@ -10,7 +10,7 @@ public interface IAccountsService {
      *
      * @param accountsDto - AccountsDto
      */
-    void createAccount(AccountsDto accountsDto);
+    AccountsDto createAccount(AccountsDto accountsDto);
     AccountsDto fetchAccount(Long accountNumber);
     AccountsDto accountById(@Argument Long id);
 
