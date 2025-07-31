@@ -1,5 +1,6 @@
 package com.sapient.accounts.dto;
 
+import com.sapient.accounts.decorator.Account;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
@@ -11,7 +12,7 @@ import java.util.Optional;
         name = "Accounts",
         description = "Schema to hold Account information"
 )
-public class AccountsDto {
+public class AccountsDto implements Account {
 
     @Schema(
             description = "Account Number of Eazy Bank account", example = "3454433243"
@@ -34,5 +35,9 @@ public class AccountsDto {
             description = "Customer Id", example = "1234678999"
     )
     private Long customerId;
+    @Override
+    public String getDetails() {
+        return String.format("Account Type: %s, Branch Address: %s", accountType, branchAddress);
+    }
 
 }

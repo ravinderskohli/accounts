@@ -10,4 +10,5 @@ public class UsersFallback implements UsersFeignClient {
     public ResponseEntity<CustomerDetailsDto> fetchUserDetails(Long customerId) {
         return null;
     }
+
 }

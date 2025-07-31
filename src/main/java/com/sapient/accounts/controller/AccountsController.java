@@ -4,6 +4,7 @@ import com.sapient.accounts.constants.AccountsConstants;
 import com.sapient.accounts.dto.AccountsContactInfoDto;
 import com.sapient.accounts.dto.AccountsDto;
 import com.sapient.accounts.dto.ResponseDto;
+import com.sapient.accounts.facade.AccountCustomerFacade;
 import com.sapient.accounts.service.IAccountsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -35,8 +36,11 @@ public class AccountsController {
    @ApiResponse(responseCode = "201",description = "Http Status Created")
    @PostMapping("/create")
     public ResponseEntity<ResponseDto> createAccount(@Valid  @RequestBody AccountsDto accountsDto) {
-       AccountsDto finalAccountsDto = iAccountsService.createAccount(accountsDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseDto(AccountsConstants.STATUS_201, AccountsConstants.MESSAGE_201, finalAccountsDto));
+       AccountCustomerFacade accountCustomerFacade = new AccountCustomerFacade(iAccountsService);
+       AccountsDto finalAccountsDto = accountCustomerFacade.createAccountAndAddCustomer(accountsDto);
+       ResponseDto responseDto = new ResponseDto.Builder().statusCode(AccountsConstants.STATUS_201)
+               .statusMsg(AccountsConstants.MESSAGE_201).statusCode( finalAccountsDto).build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
     @GetMapping("/fetch")
