@@ -1,23 +1,32 @@
+import asyncio
+import os
+import logging
 from mcp.server.fastmcp import FastMCP
 
-# Create MCP server
-mcp = FastMCP("Hello-World-Server")
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+mcp = FastMCP("Hello-World-MCP")
 
 @mcp.tool()
-def say_hello(name: str) -> str:
-    """Say hello to someone by name."""
-    return f"Hello {name}! 🎉 Welcome to MCP!"
+def hello(name: str) -> str:
+    """Greet a user by name."""
+    return f"Hello {name}! 🎉 Cloud Run MCP live!"
 
 @mcp.tool()
-def get_time() -> str:
-    """Get current timestamp."""
-    from datetime import datetime
-    return f"Current time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
-
-@mcp.tool()
-def echo(message: str) -> str:
-    """Echo back any message."""
-    return f"Echo: {message}"
+def echo(msg: str) -> str:
+    """Echo message back."""
+    return f"Echo: {msg}"
 
 if __name__ == "__main__":
-    mcp.run(transport="http")
+    port = int(os.environ.get("PORT", 8080))
+    logger.info(f"🚀 Starting MCP server on port {port}")
+    
+    # CLOUD RUN REQUIRED: async + host="0.0.0.0"
+    asyncio.run(
+        mcp.run_async(
+            transport="streamable-http",
+            host="0.0.0.0",
+            port=port
+        )
+    )
